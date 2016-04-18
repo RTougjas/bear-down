@@ -1,7 +1,10 @@
 package ee.steffi.beardown.view;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -20,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import ee.steffi.beardown.R;
@@ -27,25 +31,39 @@ import ee.steffi.beardown.db.DatabaseHelper;
 import ee.steffi.beardown.model.CodeList;
 import ee.steffi.beardown.model.CustomButton;
 import ee.steffi.beardown.model.PinPad;
+import ee.steffi.beardown.model.ServerList;
 import ee.steffi.beardown.model.ValueObject;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String CODES = "CODE_LIST";
     private static final String VALUE_OBJECT = "VALUE_OBJ";
+    private static final String SERVERS = "SERVERS";
 
     private DatabaseHelper myDataBaseHelper;
 
     private PinPad pad;
     private CodeList list;
+    private ServerList servers;
     private ValueObject v_objekt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        if(savedInstanceState != null) {
+
+            list = (CodeList) savedInstanceState.getSerializable(CODES);
+            v_objekt = (ValueObject) savedInstanceState.getSerializable(VALUE_OBJECT);
+            servers = (ServerList) savedInstanceState.getSerializable(SERVERS);
+
+        }
+
 
         pad = new PinPad((Switch)findViewById(R.id.switch_scramble), (Switch)findViewById(R.id.switch_save),
                 (TextView)findViewById(R.id.info), (EditText)findViewById(R.id.pin_entry),
@@ -53,17 +71,54 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String action = intent.getAction();
+        servers = new ServerList();
 
         if(Intent.ACTION_SEND.equals(action)) {
             Bundle extras = intent.getExtras();
-            list = (CodeList) extras.get(CODES);
-            v_objekt = (ValueObject) extras.get(VALUE_OBJECT);
+            if(extras.containsKey(CODES)) {
+                list = (CodeList) extras.get(CODES);
+            }
+            if(extras.containsKey(VALUE_OBJECT)) {
+                v_objekt = (ValueObject) extras.get(VALUE_OBJECT);
+                try {
+                    v_objekt.setURL(servers.getActive());
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(extras.containsKey(SERVERS)) {
+                servers = (ServerList) extras.get(SERVERS);
+            }
         }
         else {
             list = new CodeList();
+            servers = new ServerList();
             myDataBaseHelper = new DatabaseHelper(getApplicationContext());
+
             list.readPinCodes(myDataBaseHelper);
+            servers.readServerList(myDataBaseHelper);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+
+        savedInstanceState.putSerializable(CODES, list);
+        savedInstanceState.putSerializable(VALUE_OBJECT, v_objekt);
+        savedInstanceState.putSerializable(SERVERS, servers);
+
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        list = (CodeList) savedInstanceState.getSerializable(CODES);
+        v_objekt = (ValueObject) savedInstanceState.getSerializable(VALUE_OBJECT);
+        servers = (ServerList) savedInstanceState.getSerializable(SERVERS);
+
     }
 
     @Override
@@ -85,12 +140,22 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SaveCodeActivity.class);
             intent.setAction(Intent.ACTION_SEND);
             intent.putExtra(CODES, list);
+            intent.putExtra(SERVERS, servers);
             startActivity(intent);
         }
         if(id == R.id.action_show_codes) {
 
             Intent intent = new Intent(this, ShowCodesActivity.class);
             intent.setAction(Intent.ACTION_SEND);
+            intent.putExtra(CODES, list);
+            intent.putExtra(SERVERS, servers);
+            startActivity(intent);
+        }
+        if(id == R.id.action_set_server) {
+
+            Intent intent = new Intent(this, SaveServerActivity.class);
+            intent.setAction(Intent.ACTION_SEND);
+            intent.putExtra(SERVERS, servers);
             intent.putExtra(CODES, list);
             startActivity(intent);
         }
@@ -261,6 +326,39 @@ public class MainActivity extends AppCompatActivity {
         return btn_backspace;
     }
 
+    private void openDialog(String message) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder.setTitle(getResources().getString(R.string.title_dialog_window));
+        alertDialogBuilder.setMessage(message);
+
+        alertDialogBuilder.setPositiveButton(getResources().getString(R.string.btn_dialog_positive), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton(getResources().getString(R.string.btn_dialog_negative), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(CODES, list);
+                intent.putExtra(VALUE_OBJECT, v_objekt);
+                intent.putExtra(SERVERS, servers);
+                startActivity(intent);
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
     private void sendValue(int value) {
 
         int status = pad.type(value, v_objekt);
@@ -281,18 +379,32 @@ public class MainActivity extends AppCompatActivity {
             pad.getInfo().setText(getResources().getString(R.string.info_correct_pin) + "\n" + v_objekt.getTime() + "s");
             Vibrator correct = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             correct.vibrate(250);
+            try {
+                v_objekt.setURL("http://" + servers.getActive());
+                openDialog(v_objekt.toString());
 
-            System.out.println("CORRECT");
-            System.out.println(v_objekt.toString());
-            v_objekt.reset();
+                System.out.println("CORRECT");
+                v_objekt.reset();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
         }
-        else if(status == 0) {
-            System.out.println("Does not count");
-        }
+
         else if(status == 4) {
             pad.getInfo().setText(getResources().getString(R.string.error_pin_not_selected));
             Vibrator wrong = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             wrong.vibrate(200);
+        }
+        else if(status == 5) {
+            pad.getInfo().setText(getResources().getString(R.string.info_correct_pin) + "\n" + v_objekt.getTime() + "s");
+            Vibrator correct = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            correct.vibrate(250);
+
+            System.out.println("CORRECT");
+            v_objekt.reset();
+        }
+        else if(status == 0) {
+            System.out.println("Does not count");
         }
     }
 }

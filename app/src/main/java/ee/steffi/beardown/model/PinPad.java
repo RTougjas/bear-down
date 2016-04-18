@@ -38,6 +38,7 @@ public class PinPad {
     private TextView info;
     private ImageButton btn_backspace;
     private long start_time, stop_time;
+    private boolean savePIN;
 
     public PinPad(Switch random, Switch save, TextView info_field, EditText pin_entry, ImageButton backspace, CustomButton[] btns) {
         super();
@@ -50,16 +51,16 @@ public class PinPad {
         this.button_values = new ArrayList<Integer>();
         this.stop_time = 0;
         this.start_time = 0;
+        this.savePIN = false;
 
         toggle_scramble.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if(isChecked) {
+                if (isChecked) {
                     scrambleButtons();
-                }
-                else {
+                } else {
                     unScrambleButtons();
                 }
             }
@@ -71,7 +72,7 @@ public class PinPad {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if (isChecked) {
-                    if(toggle_scramble.isChecked()) {
+                    if (toggle_scramble.isChecked()) {
                         scrambleButtons();
                     }
                     pin.setText("");
@@ -160,13 +161,25 @@ public class PinPad {
                     stop_time = 0;
                     if(v_obj != null) {
                         if(v_obj.isMatch(pin.getText().toString())) {
-                            status = PIN_CORRECT;
+                            status = PIN_READY;
                             v_obj.setTime(getTime());
                             pin.setText("");
+                            return status;
                         }
                         else {
                             status = PIN_INCORRECT;
                             pin.setText("");
+                            return status;
+                        }
+                    }
+                    else {
+                        if(savePIN) {
+
+                        }
+                        else {
+                            status = V_OBJ_NULL;
+                            pin.setText("");
+                            return status;
                         }
                     }
                 }
@@ -208,5 +221,10 @@ public class PinPad {
     public void disableSaving() {
 
         this.toggle_save.setClickable(false);
+    }
+
+    public void setSavePIN(boolean value) {
+
+        this.savePIN = value;
     }
 }

@@ -25,6 +25,7 @@ public class CodeList implements Serializable {
     public CodeList() {
         super();
         this.codes = new ArrayList<PinCode>();
+
     }
 
     public int saveCode(String pin) {
@@ -55,8 +56,6 @@ public class CodeList implements Serializable {
                 codes.remove(i);
             }
         }
-
-
     }
 
     public int getSize() {
@@ -99,5 +98,11 @@ public class CodeList implements Serializable {
 
             codes.add(code);
         }
+    }
+
+    public void clear(DatabaseHelper helper) {
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+        helper.onUpgrade(db, 1, 2);
     }
 }

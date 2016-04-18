@@ -18,15 +18,18 @@ import ee.steffi.beardown.R;
 import ee.steffi.beardown.db.DatabaseHelper;
 import ee.steffi.beardown.model.CodeList;
 import ee.steffi.beardown.model.PinCode;
+import ee.steffi.beardown.model.ServerList;
 import ee.steffi.beardown.model.ValueObject;
 
 public class ShowCodesActivity extends AppCompatActivity {
 
     private static final String CODES = "CODE_LIST";
     private static final String VALUE_OBJECT = "VALUE_OBJ";
+    private static final String SERVERS = "SERVERS";
 
     private ArrayAdapter adapter;
     private ListView list_view;
+    private ServerList servers;
     private CodeList codes;
 
 
@@ -43,6 +46,7 @@ public class ShowCodesActivity extends AppCompatActivity {
         if(Intent.ACTION_SEND.equals(action)) {
             Bundle extras = intent.getExtras();
             codes = (CodeList) extras.get(CODES);
+            servers = (ServerList) extras.get(SERVERS);
         }
 
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, codes.codesToString());
@@ -62,6 +66,7 @@ public class ShowCodesActivity extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_SEND);
                 intent.putExtra(CODES, codes);
                 intent.putExtra(VALUE_OBJECT, v_obj);
+                intent.putExtra(SERVERS, servers);
                 startActivity(intent);
 
                 Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_pin_selected), Toast.LENGTH_SHORT);
@@ -81,9 +86,10 @@ public class ShowCodesActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_pin_deleted), Toast.LENGTH_SHORT);
                 toast.show();
 
-                Intent intent = new Intent(getApplicationContext(), ShowCodesActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.setAction(Intent.ACTION_SEND);
                 intent.putExtra(CODES, codes);
+                intent.putExtra(SERVERS, servers);
                 startActivity(intent);
 
                 return true;

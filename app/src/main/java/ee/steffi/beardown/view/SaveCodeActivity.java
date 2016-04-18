@@ -22,15 +22,20 @@ import ee.steffi.beardown.model.CodeList;
 import ee.steffi.beardown.model.CustomButton;
 import ee.steffi.beardown.model.PinCode;
 import ee.steffi.beardown.model.PinPad;
+import ee.steffi.beardown.model.ServerList;
+import ee.steffi.beardown.model.ValueObject;
 
 import static ee.steffi.beardown.R.layout.activity_main;
 
 public class SaveCodeActivity extends AppCompatActivity {
 
     private static final String CODES = "CODE_LIST";
+    private static final String SERVERS = "SERVERS";
+    private static final String VALUE_OBJECT = "VALUE_OBJ";
 
     private CodeList codes;
     private PinPad pad;
+    private ServerList servers;
 
 
     @Override
@@ -45,6 +50,7 @@ public class SaveCodeActivity extends AppCompatActivity {
                 initBackspace(), initButtons());
 
         pad.disableSaving();
+        pad.setSavePIN(true);
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -52,6 +58,7 @@ public class SaveCodeActivity extends AppCompatActivity {
         if(Intent.ACTION_SEND.equals(action)) {
             Bundle extras = intent.getExtras();
             codes = (CodeList) extras.get(CODES);
+            servers = (ServerList) extras.get(SERVERS);
         }
     }
 
@@ -78,24 +85,23 @@ public class SaveCodeActivity extends AppCompatActivity {
                 DatabaseHelper myDataBaseHelper = new DatabaseHelper(getApplicationContext());
 
                 PinCode c = new PinCode(pad.getCode());
+                ValueObject v_obj = new ValueObject(c);
 
                 if(c.save(myDataBaseHelper, codes) != -1) {
                     Intent intent = new Intent(this, MainActivity.class);
+                    intent.setAction(Intent.ACTION_SEND);
+                    intent.putExtra(CODES, codes);
+                    intent.putExtra(SERVERS, servers);
+                    intent.putExtra(VALUE_OBJECT, v_obj);
                     startActivity(intent);
+
+                    Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_pin_saved), Toast.LENGTH_SHORT);
+                    toast.show();
                 }
                 else {
                     Toast toast = Toast.makeText(getApplicationContext(), "Pin koodi salvestamine ebaõnnestus", Toast.LENGTH_SHORT);
                     toast.show();
                 }
-
-                Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_pin_saved), Toast.LENGTH_SHORT);
-                toast.show();
-
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.setAction(Intent.ACTION_SEND);
-                intent.putExtra(CODES, codes);
-                startActivity(intent);
-
             }
             else {
 
@@ -109,6 +115,7 @@ public class SaveCodeActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ShowCodesActivity.class);
             intent.setAction(Intent.ACTION_SEND);
             intent.putExtra(CODES, codes);
+            intent.putExtra(SERVERS, servers);
             startActivity(intent);
         }
 

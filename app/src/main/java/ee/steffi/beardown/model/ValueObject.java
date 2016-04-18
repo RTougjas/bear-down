@@ -1,6 +1,8 @@
 package ee.steffi.beardown.model;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -11,6 +13,7 @@ public class ValueObject implements Serializable {
     private PinCode code;
     private ArrayList<String> wrong_attempts;
     private String time;
+    private URL url;
     private int attempt_count;
 
     public ValueObject(PinCode c) {
@@ -51,8 +54,9 @@ public class ValueObject implements Serializable {
     public String toString() {
 
         return "PIN: " + code.getPinCode() + "\n" +
-                "Aeg: " + time + "\n" +
-                "Katseid: " + attempt_count;
+                "Aeg: " + time + "s" + "\n" +
+                "Katseid: " + attempt_count + "\n" +
+                "Server: " + url;
 
     }
 
@@ -60,5 +64,10 @@ public class ValueObject implements Serializable {
         this.time = null;
         this.attempt_count = 0;
         this.wrong_attempts.clear();
+    }
+
+    public void setURL(String url) throws MalformedURLException {
+
+        this.url = new URL(url);
     }
 }

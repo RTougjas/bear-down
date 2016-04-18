@@ -21,7 +21,8 @@ public class Contracts {
 
         public static final String SQL_CREATE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
-                        COL_URL + TEXT_TYPE + " )";
+                        COL_URL + TEXT_TYPE + COMMA +
+                        "UNIQUE(" + COL_URL + ")" + ")";
 
         public static final String SQL_DELETE_TABLE =
                 "DROP TABLE IF EXISTS " + TABLE_NAME;

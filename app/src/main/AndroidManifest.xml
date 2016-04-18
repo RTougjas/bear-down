@@ -27,6 +27,10 @@
         <activity
             android:name=".view.ShowCodesActivity"
             android:label="@string/title_activity_show_codes"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.SaveServerActivity"
+            android:label="@string/title_activity_save_server"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
