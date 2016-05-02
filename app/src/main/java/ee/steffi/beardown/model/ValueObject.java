@@ -70,4 +70,19 @@ public class ValueObject implements Serializable {
 
         this.url = new URL(url);
     }
+
+    public URL getURL() {
+
+        return this.url;
+    }
+
+    public ArrayList<String> getWrongAttempts() {
+
+        return this.wrong_attempts;
+    }
+
+    public String getCorrectCode() {
+
+        return code.getPinCode();
+    }
 }

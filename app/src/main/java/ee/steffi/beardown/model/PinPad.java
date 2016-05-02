@@ -36,17 +36,18 @@ public class PinPad {
     private Switch toggle_scramble, toggle_save;
     private EditText pin;
     private TextView info;
-    private ImageButton btn_backspace;
+    private ImageButton btn_backspace, btn_confirm;
     private long start_time, stop_time;
     private boolean savePIN;
 
-    public PinPad(Switch random, Switch save, TextView info_field, EditText pin_entry, ImageButton backspace, CustomButton[] btns) {
+    public PinPad(Switch random, Switch save, TextView info_field, EditText pin_entry, ImageButton backspace, CustomButton[] btns, ImageButton confirm) {
         super();
         this.toggle_scramble = random;
         this.toggle_save = save;
         this.info = info_field;
         this.pin = pin_entry;
         this.btn_backspace = backspace;
+        this.btn_confirm = confirm;
         this.buttons = btns;
         this.button_values = new ArrayList<Integer>();
         this.stop_time = 0;
@@ -80,6 +81,65 @@ public class PinPad {
                 } else {
                     stopTiming();
                 }
+            }
+        });
+
+        btn_confirm.setOnClickListener(new View.OnClickListener() {
+
+            int status = -1;
+
+            @Override
+            public void onClick(View v) {
+
+                /*
+                if(toggle_save.isChecked()) {
+                    if(v_obj != null) {
+                        if(v_obj.isMatch(pin.getText().toString())) {
+                            status = PIN_CORRECT;
+                            toggle_save.setChecked(false);
+                            v_obj.setTime(getTime());
+                            pin.setText("");
+                        }
+                        else {
+                            status = PIN_INCORRECT;
+                            v_obj.storeWrongAttempt(pin.getText().toString());
+                            pin.setText("");
+                        }
+                    }
+                    else {
+                        status = V_OBJ_NULL;
+                        pin.setText("");
+                    }
+                }
+                else {
+                    start_time = 0;
+                    stop_time = 0;
+                    if(v_obj != null) {
+                        if(v_obj.isMatch(pin.getText().toString())) {
+                            status = PIN_READY;
+                            v_obj.setTime(getTime());
+                            pin.setText("");
+                            return status;
+                        }
+                        else {
+                            status = PIN_INCORRECT;
+                            pin.setText("");
+                            return status;
+                        }
+                    }
+                    else {
+                        if(savePIN) {
+
+                        }
+                        else {
+                            status = V_OBJ_NULL;
+                            pin.setText("");
+                            return status;
+                        }
+                    }
+
+                }
+                */
             }
         });
     }

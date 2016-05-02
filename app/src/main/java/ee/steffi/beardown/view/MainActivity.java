@@ -4,30 +4,25 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.renderscript.Sampler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 
 import ee.steffi.beardown.R;
 import ee.steffi.beardown.db.DatabaseHelper;
+import ee.steffi.beardown.model.ClientTask;
 import ee.steffi.beardown.model.CodeList;
 import ee.steffi.beardown.model.CustomButton;
 import ee.steffi.beardown.model.PinPad;
@@ -67,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         pad = new PinPad((Switch)findViewById(R.id.switch_scramble), (Switch)findViewById(R.id.switch_save),
                 (TextView)findViewById(R.id.info), (EditText)findViewById(R.id.pin_entry),
-                initBackspace(), initButtons());
+                initBackspace(), initButtons(), initializeConfirmButton());
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -161,6 +156,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private ImageButton initializeConfirmButton() {
+
+        final ImageButton buttonConfirm;
+
+        buttonConfirm = (ImageButton) findViewById(R.id.buttonConfirm);
+
+        return buttonConfirm;
     }
 
     private CustomButton[] initButtons() {
@@ -337,6 +341,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                try {
+                    new ClientTask().execute(v_objekt);
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -377,14 +388,13 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(status == 3) {
             pad.getInfo().setText(getResources().getString(R.string.info_correct_pin) + "\n" + v_objekt.getTime() + "s");
-            Vibrator correct = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            correct.vibrate(250);
+
             try {
-                v_objekt.setURL("http://" + servers.getActive());
+                v_objekt.setURL("http://" + servers.getActive() + "/");
                 openDialog(v_objekt.toString());
 
                 System.out.println("CORRECT");
-                v_objekt.reset();
+                //v_objekt.reset();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }

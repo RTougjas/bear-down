@@ -47,7 +47,7 @@ public class SaveCodeActivity extends AppCompatActivity {
 
         pad = new PinPad((Switch)findViewById(R.id.switch_scramble), (Switch)findViewById(R.id.switch_save),
                 (TextView)findViewById(R.id.info), (EditText)findViewById(R.id.pin_entry),
-                initBackspace(), initButtons());
+                initBackspace(), initButtons(), initializeConfirmButton());
 
         pad.disableSaving();
         pad.setSavePIN(true);
@@ -120,6 +120,15 @@ public class SaveCodeActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private ImageButton initializeConfirmButton() {
+
+        final ImageButton buttonConfirm;
+
+        buttonConfirm = (ImageButton) findViewById(R.id.buttonConfirm);
+
+        return buttonConfirm;
     }
 
     private CustomButton[] initButtons() {

@@ -186,6 +186,19 @@
                 android:layout_centerHorizontal="true"
                 style="?android:attr/borderlessButtonStyle"/>
 
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="confirm"
+                android:id="@+id/buttonConfirm"
+                android:src="@drawable/ic_confirm"
+                android:textSize="45dp"
+                android:layout_below="@+id/button8"
+                android:layout_toEndOf="@+id/button8"
+                android:layout_alignParentEnd="true"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_alignStart="@+id/button9" />
+
 
         </RelativeLayout>
 
