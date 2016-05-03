@@ -10,17 +10,22 @@ import java.util.ArrayList;
  */
 public class ValueObject implements Serializable {
 
+    public static final String SHOULDER_SURFER = "SF";
+    public static final String TEST_ENTRY = "TE";
+
     private PinCode code;
     private ArrayList<String> wrong_attempts;
     private String time;
     private URL url;
     private int attempt_count;
     private boolean isPinSet = false;
+    private String type;
 
     public ValueObject() {
         super();
         this.wrong_attempts = new ArrayList<String>();
         this.attempt_count = wrong_attempts.size();
+        this.type = TEST_ENTRY;
     }
 
     public void storeWrongAttempt(String wrong_pin) {
@@ -84,6 +89,16 @@ public class ValueObject implements Serializable {
     public String getCorrectCode() {
 
         return code.getPinCode();
+    }
+
+    public String getType() {
+
+        return this.type;
+    }
+
+    public void setType(String s) {
+
+        this.type = s;
     }
 
     public void setCode(PinCode c) {

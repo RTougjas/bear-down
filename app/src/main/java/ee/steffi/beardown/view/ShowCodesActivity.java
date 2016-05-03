@@ -85,6 +85,10 @@ public class ShowCodesActivity extends AppCompatActivity {
                 PinCode c = new PinCode(item);
                 c.delete(new DatabaseHelper(getApplicationContext()), codes);
 
+                if(v_object.getCorrectCode().equalsIgnoreCase(c.getPinCode())) {
+                    v_object = new ValueObject();
+                }
+
                 Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_pin_deleted), Toast.LENGTH_SHORT);
                 toast.show();
 
@@ -92,6 +96,7 @@ public class ShowCodesActivity extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_SEND);
                 intent.putExtra(CODES, codes);
                 intent.putExtra(SERVERS, servers);
+                intent.putExtra(VALUE_OBJECT, v_object);
                 startActivity(intent);
 
                 return true;

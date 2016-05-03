@@ -45,13 +45,7 @@ public class ClientTask extends AsyncTask<ValueObject, Void, Void> {
 
                 json.put("correctCode", params[0].getCorrectCode());
                 json.put("wrong_attempts", params[0].getWrongAttempts());
-                /*
-                for(int i = 0; i < params[0].getWrongAttempts().size(); i++) {
-                    String wrong = "wrong" + i;
-                    json.put(wrong, params[0].getWrongAttempts().get(i));
-                }
-                */
-
+                json.put("type", params[0].getType());
                 json.put("time", params[0].getTime());
 
                 String message = json.toString();
@@ -62,7 +56,7 @@ public class ClientTask extends AsyncTask<ValueObject, Void, Void> {
                 urlConnection.setFixedLengthStreamingMode(json.toString().length());
 
                 OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-                out.write(json.toString().getBytes());
+                out.write(message.getBytes());
 
                 out.flush();
                 out.close();

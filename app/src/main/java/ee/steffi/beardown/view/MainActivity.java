@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             if(extras.containsKey(VALUE_OBJECT)) {
                 v_objekt = (ValueObject) extras.get(VALUE_OBJECT);
                 try {
+
                     v_objekt.setURL(servers.getActive());
 
                 } catch (MalformedURLException e) {
@@ -391,8 +392,10 @@ public class MainActivity extends AppCompatActivity {
     private void openDialog(String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
+        final CharSequence[] items = {"SF"};
+
         alertDialogBuilder.setTitle(getResources().getString(R.string.title_dialog_window));
-        alertDialogBuilder.setMessage(message);
+        //alertDialogBuilder.setMessage(message);
 
         alertDialogBuilder.setPositiveButton(getResources().getString(R.string.btn_dialog_positive), new DialogInterface.OnClickListener() {
 
@@ -425,6 +428,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        alertDialogBuilder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+
+                if(isChecked) {
+                    v_objekt.setType(ValueObject.SHOULDER_SURFER);
+                    System.out.println(v_objekt.getType());
+                }
+                else {
+                    v_objekt.setType(ValueObject.TEST_ENTRY);
+                    System.out.println(v_objekt.getType());
+                }
+            }
+        });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }

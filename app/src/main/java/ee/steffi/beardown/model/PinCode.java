@@ -68,5 +68,4 @@ public class PinCode implements Serializable {
         return affectedRows;
 
     }
-
 }

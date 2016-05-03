@@ -178,61 +178,6 @@ public class PinPad {
             status = V_OBJ_NULL;
         }
 
-
-        /*
-        if(isLengthOK()) {
-            if(toggle_save.isChecked()) {
-                if(v_obj == null) {
-                    status = V_OBJ_NULL;
-                    pin.setText("");
-                }
-                else {
-                    if(v_obj.isMatch(pin.getText().toString())) {
-                        status = PIN_READY;
-                        toggle_save.setChecked(false);
-                        v_obj.setTime(getTime());
-                        pin.setText("");
-                    }
-                    else {
-                        status = PIN_INCORRECT;
-                        v_obj.storeWrongAttempt(pin.getText().toString());
-                        pin.setText("");
-                    }
-                }
-            }
-            else {
-                start_time = 0;
-                stop_time = 0;
-                if(v_obj == null) {
-                    status = V_OBJ_NULL;
-                    pin.setText("");
-                }
-                else {
-                    if(v_obj.isMatch(pin.getText().toString())) {
-                        status = PIN_CORRECT;
-                        v_obj.setTime(getTime());
-                        pin.setText("");
-                        return status;
-                    }
-                    else {
-                        status = PIN_INCORRECT;
-                        pin.setText("");
-                        return status;
-                    }
-                }
-            }
-        }
-        else {
-            if(toggle_save.isChecked()) {
-                status = PIN_INCORRECT;
-                v_obj.storeWrongAttempt(pin.getText().toString());
-                pin.setText("");
-            }
-            else {
-                status = PIN_SHORT;
-            }
-        }
-        */
         return status;
     }
 
