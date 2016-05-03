@@ -59,11 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-
-        pad = new PinPad((Switch)findViewById(R.id.switch_scramble), (Switch)findViewById(R.id.switch_save),
-                (TextView)findViewById(R.id.info), (EditText)findViewById(R.id.pin_entry),
-                initBackspace(), initButtons(), initializeConfirmButton());
-
         Intent intent = getIntent();
         String action = intent.getAction();
         servers = new ServerList();
@@ -89,11 +84,19 @@ public class MainActivity extends AppCompatActivity {
         else {
             list = new CodeList();
             servers = new ServerList();
+            v_objekt = new ValueObject();
+
             myDataBaseHelper = new DatabaseHelper(getApplicationContext());
 
             list.readPinCodes(myDataBaseHelper);
             servers.readServerList(myDataBaseHelper);
         }
+
+        pad = new PinPad((Switch)findViewById(R.id.switch_scramble), (Switch)findViewById(R.id.switch_save),
+                (TextView)findViewById(R.id.info), (EditText)findViewById(R.id.pin_entry),
+                initBackspace(), initButtons(), initializeConfirmButton(), v_objekt);
+
+
     }
 
     @Override
@@ -136,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             intent.setAction(Intent.ACTION_SEND);
             intent.putExtra(CODES, list);
             intent.putExtra(SERVERS, servers);
+            intent.putExtra(VALUE_OBJECT, v_objekt);
             startActivity(intent);
         }
         if(id == R.id.action_show_codes) {
@@ -144,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
             intent.setAction(Intent.ACTION_SEND);
             intent.putExtra(CODES, list);
             intent.putExtra(SERVERS, servers);
+            intent.putExtra(VALUE_OBJECT, v_objekt);
             startActivity(intent);
         }
         if(id == R.id.action_set_server) {
@@ -152,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
             intent.setAction(Intent.ACTION_SEND);
             intent.putExtra(SERVERS, servers);
             intent.putExtra(CODES, list);
+            intent.putExtra(VALUE_OBJECT, v_objekt);
             startActivity(intent);
         }
 
@@ -163,6 +169,58 @@ public class MainActivity extends AppCompatActivity {
         final ImageButton buttonConfirm;
 
         buttonConfirm = (ImageButton) findViewById(R.id.buttonConfirm);
+
+        buttonConfirm.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                int status = pad.pinStatus(v_objekt);
+
+                if(status == PinPad.PIN_SHORT) {
+                    pad.getInfo().setText(getResources().getString(R.string.info));
+
+                }
+                else if(status == PinPad.PIN_INCORRECT) {
+                    pad.getInfo().setText(getResources().getString(R.string.error_incorrect_pin));
+                    Vibrator wrong = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    wrong.vibrate(200);
+
+                    System.out.println("INCORRECT");
+
+                }
+                else if(status == PinPad.PIN_READY) {
+                    pad.getInfo().setText(getResources().getString(R.string.info_correct_pin) + "\n" + v_objekt.getTime() + "s");
+
+                    try {
+                        v_objekt.setURL(servers.getActive());
+                        openDialog(v_objekt.toString());
+
+                        System.out.println("CORRECT");
+
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                else if(status == PinPad.V_OBJ_NULL) {
+                    pad.getInfo().setText(getResources().getString(R.string.error_pin_not_selected));
+                    Vibrator wrong = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    wrong.vibrate(200);
+                }
+                else if(status == PinPad.PIN_CORRECT) {
+                    pad.getInfo().setText(getResources().getString(R.string.info_correct_pin) + "\n" + v_objekt.getTime() + "s");
+                    Vibrator correct = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    correct.vibrate(250);
+
+                    System.out.println("CORRECT");
+                    v_objekt.reset();
+                }
+                else if(status == PinPad.PIN_EMPTY) {
+                    System.out.println("Does not count");
+                }
+            }
+        });
 
         return buttonConfirm;
     }
@@ -359,6 +417,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.setAction(Intent.ACTION_SEND);
+                v_objekt.reset();
                 intent.putExtra(CODES, list);
                 intent.putExtra(VALUE_OBJECT, v_objekt);
                 intent.putExtra(SERVERS, servers);
@@ -372,49 +431,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendValue(int value) {
 
+
         int status = pad.type(value, v_objekt);
 
-        if(status == 1) {
+        if(status == PinPad.PIN_SHORT) {
             pad.getInfo().setText(getResources().getString(R.string.info));
 
-        }
-        else if(status == 2) {
-            pad.getInfo().setText(getResources().getString(R.string.error_incorrect_pin));
-            Vibrator wrong = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            wrong.vibrate(200);
-
-            System.out.println("INCORRECT");
-
-        }
-        else if(status == 3) {
-            pad.getInfo().setText(getResources().getString(R.string.info_correct_pin) + "\n" + v_objekt.getTime() + "s");
-
-            try {
-                v_objekt.setURL("http://" + servers.getActive() + "/");
-                openDialog(v_objekt.toString());
-
-                System.out.println("CORRECT");
-                //v_objekt.reset();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        else if(status == 4) {
-            pad.getInfo().setText(getResources().getString(R.string.error_pin_not_selected));
-            Vibrator wrong = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            wrong.vibrate(200);
-        }
-        else if(status == 5) {
-            pad.getInfo().setText(getResources().getString(R.string.info_correct_pin) + "\n" + v_objekt.getTime() + "s");
-            Vibrator correct = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            correct.vibrate(250);
-
-            System.out.println("CORRECT");
-            v_objekt.reset();
-        }
-        else if(status == 0) {
-            System.out.println("Does not count");
+            Vibrator tap = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            tap.vibrate(60);
         }
     }
 }

@@ -2,6 +2,7 @@ package ee.steffi.beardown.model;
 
 import android.content.Context;
 import android.os.Vibrator;
+import android.renderscript.Sampler;
 import android.text.Editable;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -23,12 +24,12 @@ public class PinPad {
 
     private static final int[] VALUES = {1,2,3,4,5,6,7,8,9,0};
 
-    private static final int PIN_READY = 5;
-    private static final int V_OBJ_NULL = 4;
-    private static final int PIN_CORRECT = 3;
-    private static final int PIN_INCORRECT = 2;
-    private static final int PIN_SHORT = 1;
-    private static final int PIN_EMPTY = 0;
+    public static final int PIN_READY = 5;
+    public static final int V_OBJ_NULL = 4;
+    public static final int PIN_CORRECT = 3;
+    public static final int PIN_INCORRECT = 2;
+    public static final int PIN_SHORT = 1;
+    public static final int PIN_EMPTY = 0;
 
     private CustomButton[] buttons;
     private ArrayList<Integer> button_values;
@@ -39,8 +40,9 @@ public class PinPad {
     private ImageButton btn_backspace, btn_confirm;
     private long start_time, stop_time;
     private boolean savePIN;
+    private ValueObject v_object;
 
-    public PinPad(Switch random, Switch save, TextView info_field, EditText pin_entry, ImageButton backspace, CustomButton[] btns, ImageButton confirm) {
+    public PinPad(Switch random, Switch save, TextView info_field, EditText pin_entry, ImageButton backspace, CustomButton[] btns, ImageButton confirm, ValueObject v_obj) {
         super();
         this.toggle_scramble = random;
         this.toggle_save = save;
@@ -53,6 +55,7 @@ public class PinPad {
         this.stop_time = 0;
         this.start_time = 0;
         this.savePIN = false;
+        this.v_object = v_obj;
 
         toggle_scramble.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -78,68 +81,10 @@ public class PinPad {
                     }
                     pin.setText("");
                     startTiming();
+                    v_object.reset();
                 } else {
                     stopTiming();
                 }
-            }
-        });
-
-        btn_confirm.setOnClickListener(new View.OnClickListener() {
-
-            int status = -1;
-
-            @Override
-            public void onClick(View v) {
-
-                /*
-                if(toggle_save.isChecked()) {
-                    if(v_obj != null) {
-                        if(v_obj.isMatch(pin.getText().toString())) {
-                            status = PIN_CORRECT;
-                            toggle_save.setChecked(false);
-                            v_obj.setTime(getTime());
-                            pin.setText("");
-                        }
-                        else {
-                            status = PIN_INCORRECT;
-                            v_obj.storeWrongAttempt(pin.getText().toString());
-                            pin.setText("");
-                        }
-                    }
-                    else {
-                        status = V_OBJ_NULL;
-                        pin.setText("");
-                    }
-                }
-                else {
-                    start_time = 0;
-                    stop_time = 0;
-                    if(v_obj != null) {
-                        if(v_obj.isMatch(pin.getText().toString())) {
-                            status = PIN_READY;
-                            v_obj.setTime(getTime());
-                            pin.setText("");
-                            return status;
-                        }
-                        else {
-                            status = PIN_INCORRECT;
-                            pin.setText("");
-                            return status;
-                        }
-                    }
-                    else {
-                        if(savePIN) {
-
-                        }
-                        else {
-                            status = V_OBJ_NULL;
-                            pin.setText("");
-                            return status;
-                        }
-                    }
-
-                }
-                */
             }
         });
     }
@@ -185,6 +130,112 @@ public class PinPad {
         return (stop_time - start_time) / 1000.0;
     }
 
+    public int pinStatus(ValueObject v_obj) {
+
+        int status = -1;
+
+        if(isLengthOK() && v_obj.isPinSet()) {
+            if(toggle_save.isChecked()) {
+                if(v_obj.isMatch(pin.getText().toString())) {
+                    status = PIN_READY;
+                    toggle_save.setChecked(false);
+                    v_obj.setTime(getTime());
+                    pin.setText("");
+                }
+                else {
+                    status = PIN_INCORRECT;
+                    v_obj.storeWrongAttempt(pin.getText().toString());
+                    pin.setText("");
+                }
+            }
+            else {
+                start_time = 0;
+                stop_time = 0;
+
+                if(v_obj.isMatch(pin.getText().toString())) {
+                    status = PIN_CORRECT;
+                    v_obj.setTime(getTime());
+                    pin.setText("");
+                    return status;
+                } else {
+                    status = PIN_INCORRECT;
+                    pin.setText("");
+                    return status;
+                }
+            }
+        }
+        else if(!isLengthOK() && v_obj.isPinSet()) {
+            if(toggle_save.isChecked()) {
+                status = PIN_INCORRECT;
+                v_obj.storeWrongAttempt(pin.getText().toString());
+                pin.setText("");
+            }
+            else {
+                status = PIN_SHORT;
+            }
+        }
+        else {
+            status = V_OBJ_NULL;
+        }
+
+
+        /*
+        if(isLengthOK()) {
+            if(toggle_save.isChecked()) {
+                if(v_obj == null) {
+                    status = V_OBJ_NULL;
+                    pin.setText("");
+                }
+                else {
+                    if(v_obj.isMatch(pin.getText().toString())) {
+                        status = PIN_READY;
+                        toggle_save.setChecked(false);
+                        v_obj.setTime(getTime());
+                        pin.setText("");
+                    }
+                    else {
+                        status = PIN_INCORRECT;
+                        v_obj.storeWrongAttempt(pin.getText().toString());
+                        pin.setText("");
+                    }
+                }
+            }
+            else {
+                start_time = 0;
+                stop_time = 0;
+                if(v_obj == null) {
+                    status = V_OBJ_NULL;
+                    pin.setText("");
+                }
+                else {
+                    if(v_obj.isMatch(pin.getText().toString())) {
+                        status = PIN_CORRECT;
+                        v_obj.setTime(getTime());
+                        pin.setText("");
+                        return status;
+                    }
+                    else {
+                        status = PIN_INCORRECT;
+                        pin.setText("");
+                        return status;
+                    }
+                }
+            }
+        }
+        else {
+            if(toggle_save.isChecked()) {
+                status = PIN_INCORRECT;
+                v_obj.storeWrongAttempt(pin.getText().toString());
+                pin.setText("");
+            }
+            else {
+                status = PIN_SHORT;
+            }
+        }
+        */
+        return status;
+    }
+
     public int type(int value, ValueObject v_obj) {
 
         String v = String.valueOf(value);
@@ -195,61 +246,8 @@ public class PinPad {
         pin.setText(duh);
         pin.setSelection(pin.length());
 
-        if(pin.length() > 0) {
-            if(pin.length() == 4) {
-                if(toggle_save.isChecked()) {
-                    if(v_obj != null) {
-                        if(v_obj.isMatch(pin.getText().toString())) {
-                            status = PIN_CORRECT;
-                            toggle_save.setChecked(false);
-                            v_obj.setTime(getTime());
-                            pin.setText("");
-                        }
-                        else {
-                            status = PIN_INCORRECT;
-                            v_obj.storeWrongAttempt(pin.getText().toString());
-                            pin.setText("");
-                        }
-                    }
-                    else {
-                        status = V_OBJ_NULL;
-                        pin.setText("");
-                    }
-                }
-                else {
-                    start_time = 0;
-                    stop_time = 0;
-                    if(v_obj != null) {
-                        if(v_obj.isMatch(pin.getText().toString())) {
-                            status = PIN_READY;
-                            v_obj.setTime(getTime());
-                            pin.setText("");
-                            return status;
-                        }
-                        else {
-                            status = PIN_INCORRECT;
-                            pin.setText("");
-                            return status;
-                        }
-                    }
-                    else {
-                        if(savePIN) {
-
-                        }
-                        else {
-                            status = V_OBJ_NULL;
-                            pin.setText("");
-                            return status;
-                        }
-                    }
-                }
-            }
-            else {
-                status = PIN_SHORT;
-            }
-        }
-        else {
-            status = PIN_EMPTY;
+        if(pin.length() < 4) {
+            status = PIN_SHORT;
         }
 
         return status;
@@ -260,7 +258,7 @@ public class PinPad {
     }
 
     public boolean isLengthOK() {
-        if(pin.length() == 4) {
+        if(pin.length() >= 4) {
             return true;
         }
         else {

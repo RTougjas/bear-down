@@ -36,6 +36,7 @@ public class SaveCodeActivity extends AppCompatActivity {
     private CodeList codes;
     private PinPad pad;
     private ServerList servers;
+    private ValueObject v_object;
 
 
     @Override
@@ -45,13 +46,6 @@ public class SaveCodeActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        pad = new PinPad((Switch)findViewById(R.id.switch_scramble), (Switch)findViewById(R.id.switch_save),
-                (TextView)findViewById(R.id.info), (EditText)findViewById(R.id.pin_entry),
-                initBackspace(), initButtons(), initializeConfirmButton());
-
-        pad.disableSaving();
-        pad.setSavePIN(true);
-
         Intent intent = getIntent();
         String action = intent.getAction();
 
@@ -59,7 +53,15 @@ public class SaveCodeActivity extends AppCompatActivity {
             Bundle extras = intent.getExtras();
             codes = (CodeList) extras.get(CODES);
             servers = (ServerList) extras.get(SERVERS);
+            v_object = (ValueObject) extras.get(VALUE_OBJECT);
         }
+
+        pad = new PinPad((Switch)findViewById(R.id.switch_scramble), (Switch)findViewById(R.id.switch_save),
+                (TextView)findViewById(R.id.info), (EditText)findViewById(R.id.pin_entry),
+                initBackspace(), initButtons(), initializeConfirmButton(), v_object);
+
+        pad.disableSaving();
+        pad.setSavePIN(true);
     }
 
     @Override
@@ -78,44 +80,13 @@ public class SaveCodeActivity extends AppCompatActivity {
             return true;
         }
 
-        if (id == R.id.action_save_pin) {
-
-            if(pad.isLengthOK()) {
-
-                DatabaseHelper myDataBaseHelper = new DatabaseHelper(getApplicationContext());
-
-                PinCode c = new PinCode(pad.getCode());
-                ValueObject v_obj = new ValueObject(c);
-
-                if(c.save(myDataBaseHelper, codes) != -1) {
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.setAction(Intent.ACTION_SEND);
-                    intent.putExtra(CODES, codes);
-                    intent.putExtra(SERVERS, servers);
-                    intent.putExtra(VALUE_OBJECT, v_obj);
-                    startActivity(intent);
-
-                    Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_pin_saved), Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-                else {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Pin koodi salvestamine ebaõnnestus", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            }
-            else {
-
-                Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_pin_short), Toast.LENGTH_SHORT);
-                toast.show();
-            }
-
-        }
         if(id == R.id.action_show_codes) {
 
             Intent intent = new Intent(this, ShowCodesActivity.class);
             intent.setAction(Intent.ACTION_SEND);
             intent.putExtra(CODES, codes);
             intent.putExtra(SERVERS, servers);
+            intent.putExtra(VALUE_OBJECT, v_object);
             startActivity(intent);
         }
 
@@ -127,6 +98,42 @@ public class SaveCodeActivity extends AppCompatActivity {
         final ImageButton buttonConfirm;
 
         buttonConfirm = (ImageButton) findViewById(R.id.buttonConfirm);
+
+        buttonConfirm.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if(pad.isLengthOK()) {
+
+                    DatabaseHelper myDataBaseHelper = new DatabaseHelper(getApplicationContext());
+
+                    PinCode c = new PinCode(pad.getCode());
+                    v_object.setCode(c);
+
+                    if(c.save(myDataBaseHelper, codes) != -1) {
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.setAction(Intent.ACTION_SEND);
+                        intent.putExtra(CODES, codes);
+                        intent.putExtra(SERVERS, servers);
+                        intent.putExtra(VALUE_OBJECT, v_object);
+                        startActivity(intent);
+
+                        Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_pin_saved), Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                    else {
+                        Toast toast = Toast.makeText(getApplicationContext(), "Pin koodi salvestamine ebaõnnestus", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+                else {
+
+                    Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_pin_short), Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        });
 
         return buttonConfirm;
     }
@@ -296,13 +303,7 @@ public class SaveCodeActivity extends AppCompatActivity {
 
     private void sendValue(int value) {
 
-        int status = pad.type(value, null);
+        pad.type(value, null);
 
-        if(status == 1) {
-            pad.getInfo().setText(getResources().getString(R.string.info));
-
-            Vibrator tap = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            tap.vibrate(60);
-        }
     }
 }

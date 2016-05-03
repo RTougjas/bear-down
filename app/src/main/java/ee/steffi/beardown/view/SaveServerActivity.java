@@ -25,11 +25,13 @@ import ee.steffi.beardown.db.Contracts;
 import ee.steffi.beardown.db.DatabaseHelper;
 import ee.steffi.beardown.model.CodeList;
 import ee.steffi.beardown.model.ServerList;
+import ee.steffi.beardown.model.ValueObject;
 
 public class SaveServerActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private static final String SERVERS = "SERVERS";
     private static final String CODES = "CODE_LIST";
+    private static final String VALUE_OBJECT = "VALUE_OBJ";
 
     private Spinner select_servers;
     private ArrayAdapter adapter;
@@ -38,6 +40,7 @@ public class SaveServerActivity extends AppCompatActivity implements AdapterView
 
     private CodeList codes;
     private ServerList servers;
+    private ValueObject v_object;
     private DatabaseHelper myDataBaseHelper;
     private SQLiteDatabase db;
 
@@ -55,6 +58,7 @@ public class SaveServerActivity extends AppCompatActivity implements AdapterView
             Bundle extras = intent.getExtras();
             servers = (ServerList) extras.get(SERVERS);
             codes = (CodeList) extras.get(CODES);
+            v_object = (ValueObject) extras.get(VALUE_OBJECT);
         }
 
         server_URL = (EditText)findViewById(R.id.new_server_address);
@@ -124,6 +128,7 @@ public class SaveServerActivity extends AppCompatActivity implements AdapterView
                     intent.setAction(Intent.ACTION_SEND);
                     intent.putExtra(SERVERS, servers);
                     intent.putExtra(CODES, codes);
+                    intent.putExtra(VALUE_OBJECT, v_object);
                     startActivity(intent);
 
                     Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_server_saved), Toast.LENGTH_SHORT);
@@ -137,6 +142,7 @@ public class SaveServerActivity extends AppCompatActivity implements AdapterView
             intent.setAction(Intent.ACTION_SEND);
             intent.putExtra(SERVERS, servers);
             intent.putExtra(CODES, codes);
+            intent.putExtra(VALUE_OBJECT, v_object);
             startActivity(intent);
 
             Toast toast = Toast.makeText(getApplicationContext(), servers.getActive(), Toast.LENGTH_SHORT);
@@ -150,6 +156,7 @@ public class SaveServerActivity extends AppCompatActivity implements AdapterView
             intent.setAction(Intent.ACTION_SEND);
             intent.putExtra(SERVERS, servers);
             intent.putExtra(CODES, codes);
+            intent.putExtra(VALUE_OBJECT, v_object);
             startActivity(intent);
 
             Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_servers_deleted), Toast.LENGTH_SHORT);

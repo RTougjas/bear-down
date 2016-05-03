@@ -27,7 +27,7 @@ public class PinCode implements Serializable {
 
     public long save(DatabaseHelper helper, CodeList codes) {
 
-        if(this.code.length() == 4) {
+        if(this.code.length() >= 4) {
             SQLiteDatabase db = helper.getWritableDatabase();
 
             ContentValues values = new ContentValues();

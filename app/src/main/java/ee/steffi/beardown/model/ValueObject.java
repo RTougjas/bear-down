@@ -15,10 +15,10 @@ public class ValueObject implements Serializable {
     private String time;
     private URL url;
     private int attempt_count;
+    private boolean isPinSet = false;
 
-    public ValueObject(PinCode c) {
+    public ValueObject() {
         super();
-        this.code = c;
         this.wrong_attempts = new ArrayList<String>();
         this.attempt_count = wrong_attempts.size();
     }
@@ -84,5 +84,16 @@ public class ValueObject implements Serializable {
     public String getCorrectCode() {
 
         return code.getPinCode();
+    }
+
+    public void setCode(PinCode c) {
+
+        this.code = c;
+        this.isPinSet = true;
+    }
+
+    public boolean isPinSet() {
+
+        return this.isPinSet;
     }
 }

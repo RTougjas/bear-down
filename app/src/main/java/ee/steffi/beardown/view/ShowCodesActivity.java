@@ -31,6 +31,7 @@ public class ShowCodesActivity extends AppCompatActivity {
     private ListView list_view;
     private ServerList servers;
     private CodeList codes;
+    private ValueObject v_object;
 
 
     @Override
@@ -47,6 +48,7 @@ public class ShowCodesActivity extends AppCompatActivity {
             Bundle extras = intent.getExtras();
             codes = (CodeList) extras.get(CODES);
             servers = (ServerList) extras.get(SERVERS);
+            v_object = (ValueObject) extras.get(VALUE_OBJECT);
         }
 
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, codes.codesToString());
@@ -60,12 +62,12 @@ public class ShowCodesActivity extends AppCompatActivity {
 
                 String item = (String) parent.getItemAtPosition(position);
                 PinCode c = new PinCode(item);
-                ValueObject v_obj = new ValueObject(c);
+                v_object.setCode(c);
 
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.setAction(Intent.ACTION_SEND);
                 intent.putExtra(CODES, codes);
-                intent.putExtra(VALUE_OBJECT, v_obj);
+                intent.putExtra(VALUE_OBJECT, v_object);
                 intent.putExtra(SERVERS, servers);
                 startActivity(intent);
 

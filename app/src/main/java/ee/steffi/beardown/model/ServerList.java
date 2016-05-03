@@ -78,6 +78,8 @@ public class ServerList implements Serializable{
         for(cursor.moveToFirst(); cursor.isAfterLast() == false; cursor.moveToNext()) {
             this.addServer(cursor.getString(cursor.getColumnIndexOrThrow(Contracts.ServerEntry.COL_URL)));
         }
+
+        setActive(servers.get(0));
     }
 
     public void deleteServers(DatabaseHelper helper) {
@@ -97,7 +99,9 @@ public class ServerList implements Serializable{
 
     public void setActive(String url) {
 
-        this.active = url;
+        String u = "http://" + url + "/";
+
+        this.active = u;
     }
 
     public ArrayList<String> getServers() {

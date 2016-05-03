@@ -54,7 +54,7 @@
             android:inputType="number"
             android:gravity="center"
             android:editable="true"
-            android:maxLength="4"
+            android:maxLength="12"
             android:layout_marginTop="50dp" />
 
         <ImageButton
