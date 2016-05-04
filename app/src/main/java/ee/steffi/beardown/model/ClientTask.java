@@ -1,5 +1,10 @@
 package ee.steffi.beardown.model;
 
+import android.app.AlertDialog;
+import android.app.Application;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -20,6 +25,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import ee.steffi.beardown.R;
+import ee.steffi.beardown.view.MainActivity;
 
 /**
  * Created by rain on 4/26/16.
@@ -70,21 +78,18 @@ public class ClientTask extends AsyncTask<ValueObject, Void, Void> {
                 }
                 rd.close();
 
-                params[0].reset();
+                //params[0].reset();
 
-                /*
                 if(urlConnection.getResponseCode() == 200) {
 
-                    System.out.println("getContentEnconding R: " + urlConnection.getContentEncoding());
-                    System.out.println("getRequestMethod R: " + urlConnection.getRequestMethod());
-                    System.out.println("getContentType R: " + urlConnection.getContentType());
-                    System.out.println("getResponseMessage R: " + urlConnection.getResponseMessage());
+                    params[0].reset(ValueObject.STATUS_SUCCESS);
 
-                    System.out.println(params[0].getURL());
-
-                    params[0].reset();
                 }
-                */
+                else {
+
+                    params[0].reset(ValueObject.STATUS_FAIL);
+
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();

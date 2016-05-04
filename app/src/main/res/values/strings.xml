@@ -9,10 +9,13 @@
     <string name="action_show_codes">Salvestatud koodid</string>
     <string name="action_show_servers">Serverid</string>
     <string name="action_delete_servers">Kustuta serverid</string>
+
     <string name="toggle_scramble">Juhuslik sisestusväli</string>
     <string name="toggle_save">Mõõda aega</string>
     <string name="btn_dialog_positive">Saada</string>
     <string name="btn_dialog_negative">Tühista</string>
+    <string name="btn_dialog_neutral">saada SF</string>
+    <string name="btn_ok">OK</string>
 
     <string name="info">Sisesta PIN</string>
     <string name="info_correct_pin">Korrektne PIN</string>
@@ -21,11 +24,13 @@
     <string name="info_pin_selected">PIN valitud</string>
     <string name="info_server_saved">Serveri aadress salvestatud</string>
     <string name="info_servers_deleted">Serverid kustutatud</string>
+    <string name="info_data_sent_success">Saatmine õnnestus</string>
 
     <string name="error_pin_not_selected">Vali esmalt PIN</string>
     <string name="error_incorrect_pin">Vale PIN</string>
     <string name="error_pin_short">Vale pikkusega PIN</string>
     <string name="error_pin_save_fail">salvestamine ebaõnnestus</string>
+    <string name="error_data_sent_fail">Saatmine ebaõnnestus</string>
 
     <string name="title_activity_show_codes">Salvestatud koodid</string>
     <string name="title_dialog_window">Korrektne PIN</string>

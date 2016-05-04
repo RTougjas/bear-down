@@ -97,7 +97,16 @@ public class MainActivity extends AppCompatActivity {
                 (TextView)findViewById(R.id.info), (EditText)findViewById(R.id.pin_entry),
                 initBackspace(), initButtons(), initializeConfirmButton(), v_objekt);
 
-
+        /*
+        if(v_objekt.getStatus() == ValueObject.STATUS_SUCCESS) {
+            String message = getResources().getString(R.string.info_data_sent_success);
+            showMessage(message);
+        }
+        else if(v_objekt.getStatus() == ValueObject.STATUS_FAIL) {
+            String message = getResources().getString(R.string.error_data_sent_fail);
+            showMessage(message);
+        }
+        */
     }
 
     @Override
@@ -389,13 +398,14 @@ public class MainActivity extends AppCompatActivity {
         return btn_backspace;
     }
 
+
     private void openDialog(String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
         final CharSequence[] items = {"SF"};
 
         alertDialogBuilder.setTitle(getResources().getString(R.string.title_dialog_window));
-        //alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setMessage(message);
 
         alertDialogBuilder.setPositiveButton(getResources().getString(R.string.btn_dialog_positive), new DialogInterface.OnClickListener() {
 
@@ -404,7 +414,6 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     new ClientTask().execute(v_objekt);
-
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -428,21 +437,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        alertDialogBuilder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+        alertDialogBuilder.setNeutralButton(getResources().getString(R.string.btn_dialog_neutral), new DialogInterface.OnClickListener() {
 
             @Override
-            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-
-                if(isChecked) {
+            public void onClick(DialogInterface dialog, int which) {
+                try {
                     v_objekt.setType(ValueObject.SHOULDER_SURFER);
-                    System.out.println(v_objekt.getType());
-                }
-                else {
-                    v_objekt.setType(ValueObject.TEST_ENTRY);
-                    System.out.println(v_objekt.getType());
+                    new ClientTask().execute(v_objekt);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
+
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }

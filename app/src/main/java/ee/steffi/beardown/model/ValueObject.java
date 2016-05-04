@@ -13,6 +13,10 @@ public class ValueObject implements Serializable {
     public static final String SHOULDER_SURFER = "SF";
     public static final String TEST_ENTRY = "TE";
 
+    public static final int STATUS_SUCCESS = 2;
+    public static final int STATUS_PENDING = 1;
+    public static final int STATUS_FAIL = 0;
+
     private PinCode code;
     private ArrayList<String> wrong_attempts;
     private String time;
@@ -20,12 +24,14 @@ public class ValueObject implements Serializable {
     private int attempt_count;
     private boolean isPinSet = false;
     private String type;
+    private int status;
 
     public ValueObject() {
         super();
         this.wrong_attempts = new ArrayList<String>();
         this.attempt_count = wrong_attempts.size();
         this.type = TEST_ENTRY;
+        this.status = STATUS_PENDING;
     }
 
     public void storeWrongAttempt(String wrong_pin) {
@@ -65,10 +71,20 @@ public class ValueObject implements Serializable {
 
     }
 
+    public void reset(int l_status) {
+        this.time = null;
+        this.attempt_count = 0;
+        this.wrong_attempts.clear();
+        this.type = TEST_ENTRY;
+        this.status = l_status;
+    }
+
     public void reset() {
         this.time = null;
         this.attempt_count = 0;
         this.wrong_attempts.clear();
+        this.type = TEST_ENTRY;
+        this.status = STATUS_PENDING;
     }
 
     public void setURL(String url) throws MalformedURLException {
@@ -111,4 +127,11 @@ public class ValueObject implements Serializable {
 
         return this.isPinSet;
     }
+
+    public int getStatus() {
+
+        return this.status;
+    }
+
+
 }
