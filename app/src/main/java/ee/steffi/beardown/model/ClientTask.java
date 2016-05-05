@@ -55,6 +55,7 @@ public class ClientTask extends AsyncTask<ValueObject, Void, Void> {
                 json.put("wrong_attempts", params[0].getWrongAttempts());
                 json.put("type", params[0].getType());
                 json.put("time", params[0].getTime());
+                json.put("pad", params[0].getPadStatus());
 
                 String message = json.toString();
 

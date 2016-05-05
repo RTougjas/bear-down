@@ -79,7 +79,9 @@ public class ServerList implements Serializable{
             this.addServer(cursor.getString(cursor.getColumnIndexOrThrow(Contracts.ServerEntry.COL_URL)));
         }
 
-        setActive(servers.get(0));
+        if(servers.size() > 0) {
+            setActive(servers.get(0));
+        }
     }
 
     public void deleteServers(DatabaseHelper helper) {

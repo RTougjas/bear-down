@@ -57,6 +57,8 @@ public class PinPad {
         this.savePIN = false;
         this.v_object = v_obj;
 
+        v_object.setPadStatus(ValueObject.PAD_TRADITIONAL);
+
         toggle_scramble.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -91,6 +93,7 @@ public class PinPad {
 
     private void scrambleButtons() {
 
+        v_object.setPadStatus(ValueObject.PAD_RANDOM);
         button_values.clear();
 
         for(int i = 0; i < buttons.length; i++) {
@@ -107,7 +110,9 @@ public class PinPad {
 
     private void unScrambleButtons() {
 
+        v_object.setPadStatus(ValueObject.PAD_TRADITIONAL);
         button_values.clear();
+
         for(int i = 0; i < buttons.length; i++) {
             button_values.add(VALUES[i]);
             buttons[i].setValue(button_values.get(i));
@@ -230,4 +235,5 @@ public class PinPad {
 
         this.savePIN = value;
     }
+
 }

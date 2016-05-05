@@ -12,6 +12,8 @@ public class ValueObject implements Serializable {
 
     public static final String SHOULDER_SURFER = "SF";
     public static final String TEST_ENTRY = "TE";
+    public static final String PAD_TRADITIONAL = "REG";
+    public static final String PAD_RANDOM = "RAN";
 
     public static final int STATUS_SUCCESS = 2;
     public static final int STATUS_PENDING = 1;
@@ -25,6 +27,7 @@ public class ValueObject implements Serializable {
     private boolean isPinSet = false;
     private String type;
     private int status;
+    private String pad_status;
 
     public ValueObject() {
         super();
@@ -32,6 +35,7 @@ public class ValueObject implements Serializable {
         this.attempt_count = wrong_attempts.size();
         this.type = TEST_ENTRY;
         this.status = STATUS_PENDING;
+        this.pad_status = PAD_TRADITIONAL;
     }
 
     public void storeWrongAttempt(String wrong_pin) {
@@ -115,6 +119,16 @@ public class ValueObject implements Serializable {
     public void setType(String s) {
 
         this.type = s;
+    }
+
+    public String getPadStatus() {
+
+        return this.pad_status;
+    }
+
+    public void setPadStatus(String p_status) {
+
+        this.pad_status = p_status;
     }
 
     public void setCode(PinCode c) {
