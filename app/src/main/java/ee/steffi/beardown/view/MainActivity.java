@@ -97,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
                 (TextView)findViewById(R.id.info), (EditText)findViewById(R.id.pin_entry),
                 initBackspace(), initButtons(), initializeConfirmButton(), v_objekt);
 
+        if(v_objekt.getPadStatus().equals(ValueObject.PAD_RANDOM)) {
+            pad.scrambleButtons();
+        }
+
         /*
         if(v_objekt.getStatus() == ValueObject.STATUS_SUCCESS) {
             String message = getResources().getString(R.string.info_data_sent_success);

@@ -91,7 +91,7 @@ public class PinPad {
         });
     }
 
-    private void scrambleButtons() {
+    public void scrambleButtons() {
 
         v_object.setPadStatus(ValueObject.PAD_RANDOM);
         button_values.clear();

@@ -51,7 +51,7 @@
             android:id="@+id/pin_entry"
             android:layout_below="@+id/switch_scramble"
             android:layout_centerHorizontal="true"
-            android:inputType="number"
+            android:inputType="numberPassword"
             android:gravity="center"
             android:editable="true"
             android:maxLength="12"
